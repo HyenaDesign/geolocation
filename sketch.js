@@ -5,15 +5,9 @@ let fruits = [];
 let score = 0;
 let gameOver = false;
 let startTime;
-let canvasSize;
 
 function setup() {
-    if (windowWidth < windowHeight) {
-        canvasSize = windowWidth * 0.9;
-    } else {
-        canvasSize = windowHeight * 0.9;
-    }
-    createCanvas(canvasSize, canvasSize);
+    createCanvas(640, 480);
     video = createCapture(VIDEO);
     video.hide();
     poseNet = ml5.poseNet(video, modelLoaded);
@@ -22,7 +16,7 @@ function setup() {
     startTime = millis();
 
     // Generate new fruits every second
-    setInterval(function () {
+    setInterval(function() {
         if (!gameOver) {
             let newFruit = new Fruit(random(width), height, random(3, 6));
             fruits.push(newFruit);
@@ -43,7 +37,7 @@ function modelLoaded() {
 function draw() {
     translate(width, 0);
     scale(-1, 1);
-    image(video, 0, 0, width, height);
+    image(video, 0, 0);
 
     if (nose) {
         // Draw ellipse on the nose
@@ -67,15 +61,15 @@ function draw() {
     resetMatrix();
 
     // Display score without mirroring
-    textSize(canvasSize / 20);
+    textSize(32);
     fill(255, 0, 0); // Set the fill color to red
     textAlign(LEFT); // Set alignment to left for default coordinate system
-    text("Score: " + score, canvasSize / 20, canvasSize / 20);
+    text("Score: " + score, 10, 30);
 
     // Check for game over condition
     if (score >= 10 || millis() - startTime >= 30000) {
         gameOver = true;
-        textSize(canvasSize / 10);
+        textSize(64);
         fill(255, 0, 0);
         textAlign(CENTER, CENTER);
         text("Game Over", width / 2, height / 2);
@@ -103,25 +97,16 @@ class Fruit {
     display() {
         // Draw the fruit
         fill(255, 0, 0);
-        ellipse(this.x, this.y, canvasSize / 10, canvasSize / 10);
+        ellipse(this.x, this.y, 50, 50);
     }
 
     checkSlice(nose) {
         // Check if the slicing motion intersects with the fruit
         // For simplicity, assume slicing motion occurs when nose is above fruit
-        if (nose.y < this.y && dist(nose.x, nose.y, this.x, this.y) < canvasSize / 20) {
+        if (nose.y < this.y && dist(nose.x, nose.y, this.x, this.y) < 25) {
             return true;
         } else {
             return false;
         }
     }
-}
-
-function windowResized() {
-    if (windowWidth < windowHeight) {
-        canvasSize = windowWidth * 0.9;
-    } else {
-        canvasSize = windowHeight * 0.9;
-    }
-    resizeCanvas(canvasSize, canvasSize);
 }
